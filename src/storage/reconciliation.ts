@@ -37,6 +37,8 @@ export function reconcileOrderMetadata(existing: OrderMetadata | undefined, inco
     total: defined(incoming.total, existing.total),
     currency: defined(incoming.currency, existing.currency),
     trackingNumber: defined(incoming.trackingNumber, existing.trackingNumber),
+    trackingUrl: defined(incoming.trackingUrl, existing.trackingUrl),
+    contactUrl: defined(incoming.contactUrl, existing.contactUrl),
     shippingStatus: defined(incoming.shippingStatus, existing.shippingStatus),
     estimatedDeliveryAt: defined(incoming.estimatedDeliveryAt, existing.estimatedDeliveryAt),
     refund: defined(incoming.refund, existing.refund),

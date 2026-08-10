@@ -7,6 +7,9 @@ const original: OrderMetadata = {
   orderNumber: "12345678",
   seller: "Card Castle",
   estimatedDeliveryAt: "2026-08-07T07:00:00.000Z",
+  trackingNumber: "9400000000000000000000",
+  trackingUrl: "https://tools.usps.com/go/TrackConfirmAction.action?tLabels=9400000000000000000000",
+  contactUrl: "https://store.tcgplayer.com/myaccount/messagecenter/create/12345678?type=1",
   items: [{ id: "line:1", name: "Pikachu", quantityOrdered: 4, condition: "Near Mint" }],
   lastSeenAt: "2026-08-01T00:00:00.000Z"
 };
@@ -35,6 +38,8 @@ describe("order reconciliation", () => {
     expect(refreshed.items).toHaveLength(2);
     expect(refreshed.items[0].condition).toBe("Near Mint");
     expect(refreshed.estimatedDeliveryAt).toBe("2026-08-07T07:00:00.000Z");
+    expect(refreshed.trackingUrl).toBe(original.trackingUrl);
+    expect(refreshed.contactUrl).toBe(original.contactUrl);
     expect(tracking).toMatchObject({
       status: "partial",
       note: "Missing one Pikachu",

@@ -1,5 +1,7 @@
 import { createRoot, type Root } from "react-dom/client";
 import { tcgplayerAdapter } from "../marketplaces/tcgplayer/adapter";
+import { applyRequestedOrderHistorySearch } from "../marketplaces/tcgplayer/orderHistorySearch";
+import { applyRequestedSellerMessage } from "../marketplaces/tcgplayer/sellerMessage";
 import { upsertLocalOrders } from "../storage/localOrders";
 import type { OrderMetadata } from "../types";
 import { OrderControl } from "./OrderControl";
@@ -13,6 +15,22 @@ interface MountedControl {
 const mounted = new Map<string, MountedControl>();
 let scanTimer: number | undefined;
 let scanInProgress = false;
+
+function applyOrderSearchRequest(): void {
+  try {
+    applyRequestedOrderHistorySearch(document, window.location, window.history);
+  } catch (error) {
+    console.warn("Receivd: could not apply the requested order search.", error);
+  }
+}
+
+function applySellerMessageRequest(): void {
+  try {
+    applyRequestedSellerMessage(document, window.location, window.history);
+  } catch (error) {
+    console.warn("Receivd: could not prepare the requested seller message.", error);
+  }
+}
 
 function mountControl(metadata: OrderMetadata, host: HTMLElement): void {
   const current = mounted.get(metadata.orderNumber);
@@ -80,19 +98,29 @@ function installNavigationHooks(): void {
     };
   }
   window.addEventListener("popstate", notify);
-  window.addEventListener("receivd:navigation", () => scheduleScan(100));
+  window.addEventListener("receivd:navigation", () => {
+    applyOrderSearchRequest();
+    applySellerMessageRequest();
+    scheduleScan(100);
+  });
   window.addEventListener("receivd:rescan", () => scheduleScan(0));
 }
 
 function start(): void {
   if (!tcgplayerAdapter.canHandlePage(window.location)) return;
   installNavigationHooks();
+  applyOrderSearchRequest();
+  applySellerMessageRequest();
   const observer = new MutationObserver((mutations) => {
     const hasMarketplaceMutation = mutations.some((mutation) => {
       const target = mutation.target instanceof Element ? mutation.target : mutation.target.parentElement;
       return !target?.closest("[data-receivd-root]");
     });
-    if (hasMarketplaceMutation) scheduleScan();
+    if (hasMarketplaceMutation) {
+      applyOrderSearchRequest();
+      applySellerMessageRequest();
+      scheduleScan();
+    }
   });
   observer.observe(document.body, { childList: true, subtree: true });
   scheduleScan(0);

@@ -2,6 +2,7 @@ import type { ExtractedMarketplaceOrder } from "../types";
 import type { OrderItemMetadata, OrderMetadata, OrderRefundMetadata } from "../../types";
 import { createStableItemId } from "../../utils/itemIdentity";
 import { cleanText, parseFirstInteger, parseMoney } from "../../utils/text";
+import { safeExternalUrl } from "../../utils/urls";
 import { isLikelyTcgplayerOrderNumber } from "./orderIdentity";
 import { selectors } from "./selectors";
 
@@ -220,7 +221,11 @@ function summaryValue(container: Element, label: string): string | undefined {
   return undefined;
 }
 
-function trackingDetails(container: Element): { trackingNumber?: string; shippingStatus?: string } {
+function trackingDetails(container: Element): {
+  trackingNumber?: string;
+  trackingUrl?: string;
+  shippingStatus?: string;
+} {
   const trackingElement = queryFirst(container, selectors.tracking);
   const dataValue = cleanText(trackingElement?.getAttribute("data-tracking-number"));
   const label = attributeOrText(trackingElement, ["aria-label"]);
@@ -236,12 +241,20 @@ function trackingDetails(container: Element): { trackingNumber?: string; shippin
       .at(0);
     return {
       trackingNumber: cleanText(followingTrackingLink?.textContent),
+      trackingUrl: safeExternalUrl(followingTrackingLink?.getAttribute("href") ?? undefined, window.location.href),
       shippingStatus: cleanText(label?.replace(/:$/, ""))
     };
   }
 
+  const trackingLink =
+    trackingElement.closest<HTMLAnchorElement>("a[href]") ??
+    trackingElement.querySelector<HTMLAnchorElement>("a[href]");
   return {
     trackingNumber: stripLabel(dataValue ?? label, /^tracking(?:\s+number)?\s*:?\s*/i),
+    trackingUrl: safeExternalUrl(
+      trackingLink?.getAttribute("href") ?? trackingElement.getAttribute("data-tracking-url") ?? undefined,
+      window.location.href
+    ),
     shippingStatus: stripLabel(
       textFromSelector(container, selectors.shippingStatus, ["data-shipping-status", "aria-label"]),
       /^(?:shipping\s+)?status\s*:?\s*/i
@@ -272,6 +285,35 @@ function estimatedDeliveryDate(container: Element): string | undefined {
   return normalizeDate(cleanText(match?.[1]));
 }
 
+function contactSellerUrl(
+  container: Element,
+  sourceUrl: string,
+  orderNumber: string
+): string | undefined {
+  const contact = queryFirst(container, selectors.contactSeller);
+  if (!contact) return undefined;
+  const onclick = contact.getAttribute("onclick") ?? "";
+  const onclickUrl = onclick.match(
+    /(?:document|window)\.location(?:\.href)?\s*=\s*(["'])([^"']+)\1/i
+  )?.[2];
+  const candidate =
+    contact.getAttribute("href") ?? contact.getAttribute("data-contact-url") ?? onclickUrl;
+  const normalized = safeExternalUrl(candidate ?? undefined, sourceUrl);
+  if (!normalized) return undefined;
+
+  const url = new URL(normalized);
+  const pathMatch = url.pathname.match(/\/myaccount\/messagecenter\/create\/([^/]+)\/?$/i);
+  if (
+    url.protocol !== "https:" ||
+    !/(^|\.)tcgplayer\.com$/i.test(url.hostname) ||
+    pathMatch?.[1].toLocaleLowerCase() !== orderNumber.toLocaleLowerCase() ||
+    !/^(?:1|4)$/.test(url.searchParams.get("type") ?? "")
+  ) {
+    return undefined;
+  }
+  return url.href;
+}
+
 function extractMetadata(container: Element, sourceUrl: string, now: Date): OrderMetadata | undefined {
   const orderNumber = extractOrderNumber(container);
   if (!orderNumber || !isLikelyTcgplayerOrderNumber(orderNumber)) return undefined;
@@ -289,9 +331,10 @@ function extractMetadata(container: Element, sourceUrl: string, now: Date): Orde
   const totalText =
     summaryValue(container, "Total") ??
     textFromSelector(container, selectors.total, ["data-order-total", "aria-label"]);
-  const { trackingNumber, shippingStatus } = trackingDetails(container);
+  const { trackingNumber, trackingUrl, shippingStatus } = trackingDetails(container);
   const estimatedDeliveryAt = estimatedDeliveryDate(container);
   const refund = refundDetails(container);
+  const contactUrl = contactSellerUrl(container, sourceUrl, orderNumber);
 
   return {
     marketplace: "tcgplayer",
@@ -301,6 +344,8 @@ function extractMetadata(container: Element, sourceUrl: string, now: Date): Orde
     total: parseMoney(totalText),
     currency: totalText?.includes("$") ? "USD" : undefined,
     trackingNumber,
+    trackingUrl,
+    contactUrl,
     shippingStatus,
     estimatedDeliveryAt,
     refund,

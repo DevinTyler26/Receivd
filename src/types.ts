@@ -33,6 +33,8 @@ export interface OrderMetadata {
   total?: number;
   currency?: string;
   trackingNumber?: string;
+  trackingUrl?: string;
+  contactUrl?: string;
   shippingStatus?: string;
   estimatedDeliveryAt?: string;
   refund?: OrderRefundMetadata;

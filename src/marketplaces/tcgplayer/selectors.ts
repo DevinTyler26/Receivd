@@ -49,6 +49,11 @@ export const selectors = {
     '[data-testid="tracking-number"]',
     '[aria-label*="Tracking" i]'
   ],
+  contactSeller: [
+    '[data-aid="btn-sellerorderwidget-contact"]',
+    'a[href*="/myaccount/messagecenter/create/"]',
+    '[data-contact-url]'
+  ],
   shippingStatus: [
     '[data-aid="spn-sellerorderwidget-trackingnumber"]',
     "[data-shipping-status]",
@@ -86,5 +91,35 @@ export const selectors = {
   itemProductLink: ["td.orderHistoryItems a.nocontext", 'a[href*="/product/"]'],
   itemThumbnail: ["td.orderHistoryItems img[src]"],
   orderSummary: ['[data-aid="tbl-sellerorderwidget-productsinorder"]'],
-  refundNotice: ['[data-aid="div-sellerorderwidget-singlerefund"]', '[data-aid*="refund" i]']
+  refundNotice: ['[data-aid="div-sellerorderwidget-singlerefund"]', '[data-aid*="refund" i]'],
+  orderHistorySearchInput: [
+    '[data-aid="txb-orderhistorysearch-searchstring"]',
+    '#SearchString',
+    'input[name="SearchString"]',
+    'input[title="Order History Search"]'
+  ],
+  orderHistorySearchSubmit: [
+    '[data-aid="btn-orderhistorysearch-search"]',
+    '#OrderHistoryFilterForm input[type="submit"]',
+    'input[type="submit"][title="Search Submit"]'
+  ],
+  sellerMessageSubject: [
+    'select#Subject',
+    'select[name="Subject"]',
+    '[data-aid*="subject" i] input',
+    'input[data-aid*="subject" i]',
+    '#Subject',
+    'input[name*="subject" i]',
+    'input[title*="subject" i]'
+  ],
+  sellerMessageBody: [
+    'textarea#Body',
+    'textarea[name="Body"]',
+    '[data-aid*="message" i] textarea',
+    'textarea[data-aid*="message" i]',
+    '#Message',
+    'textarea[name*="message" i]',
+    'textarea[aria-label*="message" i]',
+    'textarea'
+  ]
 } as const;

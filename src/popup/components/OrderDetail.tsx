@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { OrderItemChecklist } from "../../components/OrderItemChecklist";
 import { OrderStatusBadge } from "../../components/OrderStatusBadge";
 import { OrderStatusMenu } from "../../components/OrderStatusMenu";
-import { TCGPLAYER_ORDER_HISTORY_URL } from "../../marketplaces/tcgplayer/urls";
+import { buildTcgplayerOrderSearchUrl } from "../../marketplaces/tcgplayer/orderHistorySearch";
+import { buildSellerMessageUrl } from "../../marketplaces/tcgplayer/sellerMessage";
 import { setItemReceivedQuantity, setOrderNote, setOrderStatus } from "../../storage/tracking";
 import { NOTE_MAX_LENGTH, type DisplayOrder, type OrderStatus } from "../../types";
 import {
@@ -13,6 +14,7 @@ import {
 } from "../../utils/dates";
 import { orderDaysPastEstimate } from "../../utils/orders";
 import { missingLineCount, totalMissingQuantity } from "../../utils/quantities";
+import { safeExternalUrl } from "../../utils/urls";
 
 export function OrderDetail({ order, onBack }: { order: DisplayOrder; onBack: () => void }) {
   const [saving, setSaving] = useState(false);
@@ -23,6 +25,8 @@ export function OrderDetail({ order, onBack }: { order: DisplayOrder; onBack: ()
   const missingCards = metadata ? totalMissingQuantity(metadata.items, order.tracking) : 0;
   const missingLines = metadata ? missingLineCount(metadata.items, order.tracking) : 0;
   const overdueDays = orderDaysPastEstimate(order);
+  const trackingUrl = safeExternalUrl(metadata?.trackingUrl);
+  const sellerMessageUrl = overdueDays && metadata ? buildSellerMessageUrl(metadata) : undefined;
 
   useEffect(() => {
     setNote(order.tracking?.note ?? "");
@@ -69,8 +73,7 @@ export function OrderDetail({ order, onBack }: { order: DisplayOrder; onBack: ()
   };
 
   const openTcgplayerOrder = () => {
-    const url = metadata?.sourceUrl ?? TCGPLAYER_ORDER_HISTORY_URL;
-    void chrome.tabs.create({ url });
+    void chrome.tabs.create({ url: buildTcgplayerOrderSearchUrl(order.orderNumber) });
   };
 
   return (
@@ -126,6 +129,15 @@ export function OrderDetail({ order, onBack }: { order: DisplayOrder; onBack: ()
             </span>
           </div>
         )}
+        {sellerMessageUrl && (
+          <button
+            className="overdue-message-button"
+            onClick={() => void chrome.tabs.create({ url: sellerMessageUrl })}
+            type="button"
+          >
+            Ask seller for an update ↗
+          </button>
+        )}
       </section>
 
       {metadata && (
@@ -140,7 +152,18 @@ export function OrderDetail({ order, onBack }: { order: DisplayOrder; onBack: ()
             {metadata.estimatedDeliveryAt && (
               <><dt>Est. delivery</dt><dd>{formatOrderDate(metadata.estimatedDeliveryAt)}</dd></>
             )}
-            {metadata.trackingNumber && <><dt>Tracking</dt><dd>{metadata.trackingNumber}</dd></>}
+            {(metadata.trackingNumber || trackingUrl) && (
+              <>
+                <dt>Tracking</dt>
+                <dd>
+                  {trackingUrl ? (
+                    <a href={trackingUrl} rel="noopener noreferrer" target="_blank">
+                      {metadata.trackingNumber ?? "Track shipment"} ↗
+                    </a>
+                  ) : metadata.trackingNumber}
+                </dd>
+              </>
+            )}
           </dl>
         </section>
       )}

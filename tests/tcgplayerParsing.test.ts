@@ -18,6 +18,8 @@ describe("TCGplayer order history extraction", () => {
       orderNumber: "AAAA1111-BBBB22-CC333",
       seller: "Card Castle",
       total: 13.57,
+      contactUrl:
+        "https://store.tcgplayer.com/myaccount/messagecenter/create/aaaa1111-bbbb22-cc333?type=1",
       shippingStatus: "Shipped Without Tracking",
       estimatedDeliveryAt: expect.stringContaining("2026-08-07"),
       lastSeenAt: "2026-08-10T12:00:00.000Z"
@@ -41,6 +43,8 @@ describe("TCGplayer order history extraction", () => {
       seller: "TCGplayer Direct",
       total: 27.25,
       trackingNumber: "999999999999",
+      trackingUrl: "https://tools.usps.com/go/TrackConfirmAction.action?tLabels=999999999999",
+      contactUrl: "https://store.tcgplayer.com/myaccount/messagecenter/create/260803-abcd?type=4",
       shippingStatus: "Shipped With Tracking"
     });
     expect(orders[1].metadata.items[0]).toMatchObject({
@@ -78,5 +82,34 @@ describe("TCGplayer order history extraction", () => {
       "260803-ABCD",
       "REFUND01-AAAA22-BB333"
     ]);
+  });
+
+  it("does not retain an unsafe tracking link", () => {
+    document.documentElement.innerHTML = fixture;
+    const trackingLink = document.querySelector<HTMLAnchorElement>(
+      'a[href*="TrackConfirmAction"]'
+    );
+    trackingLink?.setAttribute("href", "javascript:alert('unsafe')");
+
+    const orders = extractTcgplayerOrders(document, {
+      sourceUrl: "https://store.tcgplayer.com/myaccount/orderhistory"
+    });
+    expect(orders[1].metadata.trackingNumber).toBe("999999999999");
+    expect(orders[1].metadata.trackingUrl).toBeUndefined();
+  });
+
+  it("does not execute or retain an untrusted contact action", () => {
+    document.documentElement.innerHTML = fixture;
+    document
+      .querySelector('[data-aid="btn-sellerorderwidget-contact"]')
+      ?.setAttribute(
+        "onclick",
+        "document.location = 'https://evil.example/myaccount/messagecenter/create/aaaa1111-bbbb22-cc333?type=1'"
+      );
+
+    const orders = extractTcgplayerOrders(document, {
+      sourceUrl: "https://store.tcgplayer.com/myaccount/orderhistory"
+    });
+    expect(orders[0].metadata.contactUrl).toBeUndefined();
   });
 });

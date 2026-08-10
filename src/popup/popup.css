@@ -30,9 +30,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .brand-lockup { align-items: center; display: flex; gap: 10px; }
 .brand-lockup h1 { font-size: 19px; letter-spacing: -0.035em; line-height: 1; margin: 0 0 4px; }
 .brand-lockup p { color: #6c7688; font-size: 10px; letter-spacing: .04em; margin: 0; text-transform: uppercase; }
-.brand-mark { background: #3153a4; border-radius: 8px; display: block; height: 34px; position: relative; width: 30px; }
-.brand-mark::before { border: 1.5px solid rgb(255 255 255 / 85%); border-radius: 3px; content: ""; inset: 7px 6px 8px; position: absolute; }
-.brand-mark::after { border-bottom: 2px solid white; border-right: 2px solid white; content: ""; height: 6px; position: absolute; right: 3px; top: 15px; transform: rotate(45deg); width: 3px; }
+.brand-icon { border-radius: 8px; display: block; height: 34px; object-fit: cover; width: 34px; }
 .header-actions { align-items: flex-end; display: flex; gap: 12px; }
 .coffee-link { color: #3153a4; font-size: 10px; font-weight: 700; margin-bottom: 1px; text-decoration: none; white-space: nowrap; }
 .coffee-link:hover { text-decoration: underline; }
@@ -129,10 +127,25 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .overdue-callout { background: #fff1e8; border: 1px solid #f2c5ad; border-radius: 7px; display: flex; flex-direction: column; gap: 2px; margin-top: 10px; padding: 8px; }
 .overdue-callout strong { color: #9a3412; font-size: 11px; }
 .overdue-callout span { color: #a9522b; font-size: 9px; }
+.overdue-message-button {
+  background: #a4431b;
+  border: 1px solid #a4431b;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 8px;
+  padding: 7px 9px;
+  width: 100%;
+}
+.overdue-message-button:hover { background: #8f3515; border-color: #8f3515; }
 .detail-card h2 { font-size: 12px; margin: 0; }
 .order-facts dl { display: grid; font-size: 10px; gap: 7px 12px; grid-template-columns: 62px 1fr; margin: 10px 0 0; }
 .order-facts dt { color: #7c8697; }
 .order-facts dd { margin: 0; overflow-wrap: anywhere; }
+.order-facts a { color: #3153a4; font-weight: 650; text-decoration: none; }
+.order-facts a:hover { text-decoration: underline; }
 .section-heading { align-items: start; display: flex; justify-content: space-between; margin-bottom: 8px; }
 .section-heading p { color: #828b9b; font-size: 9px; margin: 2px 0 0; }
 .section-heading > span { color: #858e9e; font-size: 9px; }

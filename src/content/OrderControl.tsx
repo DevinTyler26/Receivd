@@ -7,6 +7,8 @@ import type { OrderMetadata, OrderStatus, OrderTrackingState } from "../types";
 import { daysPastEstimatedDelivery, orderAgeLabel, pastEstimateLabel } from "../utils/dates";
 import { effectiveOrderStatus } from "../utils/orders";
 import { missingLineCount, totalMissingQuantity } from "../utils/quantities";
+import { safeExternalUrl } from "../utils/urls";
+import { buildSellerMessageUrl } from "../marketplaces/tcgplayer/sellerMessage";
 
 export function OrderControl({ metadata }: { metadata: OrderMetadata }) {
   const [tracking, setTracking] = useState<OrderTrackingState>();
@@ -51,6 +53,9 @@ export function OrderControl({ metadata }: { metadata: OrderMetadata }) {
   const age = orderAgeLabel(metadata.orderedAt);
   const overdueDays =
     status === "pending" ? daysPastEstimatedDelivery(metadata.estimatedDeliveryAt) : undefined;
+  const trackingUrl = safeExternalUrl(metadata.trackingUrl);
+  const trackingLabel = metadata.trackingNumber ?? "Track shipment";
+  const sellerMessageUrl = overdueDays ? buildSellerMessageUrl(metadata) : undefined;
 
   return (
     <section
@@ -77,6 +82,35 @@ export function OrderControl({ metadata }: { metadata: OrderMetadata }) {
       </div>
       {expanded && (
         <div className="receivd-inline-panel">
+          {sellerMessageUrl && (
+            <div className="receivd-seller-message-action">
+              <div>
+                <strong>Still waiting?</strong>
+                <span>Open a prefilled message for the seller.</span>
+              </div>
+              <a href={sellerMessageUrl} rel="noopener noreferrer" target="_blank">
+                Ask for an update ↗
+              </a>
+            </div>
+          )}
+          {(metadata.trackingNumber || trackingUrl) && (
+            <div className="receivd-inline-tracking">
+              <span>Tracking</span>
+              {trackingUrl ? (
+                <a
+                  aria-label={`Open tracking for ${trackingLabel}`}
+                  href={trackingUrl}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <span>{trackingLabel}</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              ) : (
+                <span className="receivd-tracking-number">{trackingLabel}</span>
+              )}
+            </div>
+          )}
           <OrderStatusMenu disabled={saving} onChange={changeStatus} value={status} />
           {status === "partial" && (
             <div className="receivd-inline-checklist">

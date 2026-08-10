@@ -1,0 +1,46 @@
+:root { color: #172033; font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+.showcase-popup-body { background: radial-gradient(circle at 20% 15%, #eaf3ff 0, #f6f8fc 42%, #edf1f7 100%); min-width: 0; }
+.showcase-layout { align-items: center; display: grid; gap: 80px; grid-template-columns: minmax(0, 1fr) 390px; height: 800px; margin: auto; max-width: 1090px; padding: 40px 0; }
+.showcase-copy { max-width: 520px; }
+.showcase-copy > img { border-radius: 24px; box-shadow: 0 18px 45px rgb(28 67 125 / 18%); height: 96px; width: 96px; }
+.showcase-eyebrow { color: #3153a4 !important; font-size: 14px !important; font-weight: 750; letter-spacing: .05em; margin: 24px 0 14px !important; text-transform: uppercase; }
+.showcase-copy h1 { color: #14213b; font-size: 48px; letter-spacing: -.045em; line-height: 1.05; margin: 0 0 20px; }
+.showcase-copy > p:last-child { color: #5c6980; font-size: 18px; line-height: 1.55; margin: 0; max-width: 500px; }
+.popup-preview { background: #f5f7fb; border: 1px solid #dce3ee; border-radius: 16px; box-shadow: 0 26px 70px rgb(28 48 84 / 20%); max-height: 680px; overflow: hidden; }
+
+.showcase-inline-body { background: #eef2f7; margin: 0; min-width: 0; }
+.marketplace-page { background: #fff; border: 1px solid #d6dce5; box-shadow: 0 14px 45px rgb(31 45 70 / 12%); margin: 28px auto; min-height: 744px; width: 1120px; }
+.marketplace-header { align-items: center; background: #272f36; color: #fff; display: flex; gap: 28px; padding: 15px 30px; }
+.marketplace-header strong { color: #55a9e9; font-size: 22px; }
+.marketplace-header span { font-size: 13px; }
+.marketplace-account { margin-left: auto; }
+.marketplace-breadcrumb { color: #6a7481; font-size: 12px; padding: 16px 32px; }
+.marketplace-order { border: 2px solid #d5d5d5; margin: 0 auto 32px; padding: 12px; width: 1000px; }
+.marketplace-order-header { align-items: center; background: #f3f3f3; border-bottom: 1px solid #d1d1d1; display: grid; gap: 20px; grid-template-columns: 1fr 1fr 1.2fr auto auto; margin: -12px -12px 0; padding: 13px 14px; }
+.marketplace-order-header div, .marketplace-summary div { display: flex; flex-direction: column; }
+.marketplace-order-header strong, .marketplace-summary strong { color: #515151; font-size: 11px; }
+.marketplace-order-header span, .marketplace-summary span, .marketplace-summary a { font-size: 12px; }
+.marketplace-order-header button { background: #0671b9; border: 0; border-radius: 7px; color: #fff; font-size: 12px; font-weight: 650; padding: 8px 12px; }
+.marketplace-summary { display: grid; gap: 80px; grid-template-columns: 220px 1fr; padding: 18px 3px; }
+.marketplace-summary div { gap: 5px; }
+.marketplace-summary a { color: #086bad; }
+.marketplace-items { border-collapse: collapse; color: #4e4e4e; font-size: 12px; width: 100%; }
+.marketplace-items th { background: #eee; text-align: left; }
+.marketplace-items td, .marketplace-items th { border: 1px solid #d4d4d4; padding: 9px; }
+.marketplace-items td:first-child { align-items: center; display: flex; gap: 9px; }
+.marketplace-items td:first-child div { display: flex; flex-direction: column; }
+.marketplace-items a { color: #0671b9; }
+.marketplace-items small { color: #656565; font-size: 11px; }
+.marketplace-items td:last-child { text-align: center; width: 105px; }
+.demo-card-art { background: linear-gradient(145deg, #f8cc4f, #2d89bf); border: 2px solid #fff; box-shadow: 0 0 0 1px #aab2ba; display: inline-block; height: 36px; width: 27px; }
+.demo-card-art.art-1 { background: linear-gradient(145deg, #df6c54, #702d73); }
+.demo-card-art.art-2 { background: linear-gradient(145deg, #6dc17c, #2f619c); }
+.marketplace-order > .receivd-root { margin-top: 14px; }
+
+.promo-body { background: #edf4fc; height: 280px; margin: 0; overflow: hidden; width: 440px; }
+.promo-tile { align-items: center; background: radial-gradient(circle at 15% 10%, #fff 0, #edf5ff 48%, #dceafb 100%); display: flex; gap: 28px; height: 280px; padding: 32px; width: 440px; }
+.promo-tile img { border-radius: 23px; box-shadow: 0 13px 32px rgb(30 73 133 / 22%); height: 118px; width: 118px; }
+.promo-tile h1 { color: #14213b; font-size: 38px; letter-spacing: -.045em; margin: 0; }
+.promo-tile p { color: #3153a4; font-size: 13px; font-weight: 750; letter-spacing: .055em; margin: 4px 0 19px; text-transform: uppercase; }
+.promo-tile span { color: #5c6980; display: block; font-size: 14px; line-height: 1.4; max-width: 180px; }

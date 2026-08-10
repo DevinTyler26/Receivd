@@ -76,7 +76,7 @@ export function App() {
     <main className="popup-shell">
       <header className="popup-header">
         <div className="brand-lockup">
-          <span aria-hidden="true" className="brand-mark"><span /></span>
+          <img aria-hidden="true" className="brand-icon" src="/icon-48.png" />
           <div>
             <h1>Receivd</h1>
             <p>TCG Order Tracker</p>

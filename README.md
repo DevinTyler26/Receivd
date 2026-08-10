@@ -10,6 +10,9 @@ Receivd has no account, backend, database, OAuth flow, or access to TCGplayer cr
 - Adds Pending, Delivered, Partially Delivered, Missing / Never Arrived, and Refunded controls to recognized orders.
 - Tracks received quantities by stable order-line identity and shows missing quantities.
 - Prominently flags Pending orders after TCGplayer's estimated delivery date without declaring them Missing.
+- Shows a safe outbound tracking-number link in expanded order controls and popup details when TCGplayer provides one.
+- Opens popup orders on TCGplayer's order-history page and automatically submits the selected order number through the rendered order search form.
+- Offers an overdue-only seller follow-up action that opens TCGplayer's captured per-order compose route and prefills a courteous status request without sending it.
 - Stores optional notes, capped at 500 characters and saved with a short debounce.
 - Shows counts, an action badge, attention-first orders, all requested filters, and search by order number, seller, tracking number, or card name.
 - Handles dynamically rendered pages with a debounced `MutationObserver` and History API navigation signals—there is no polling loop.
@@ -35,6 +38,7 @@ npm run test        # fixture and domain-logic tests
 npm run test:watch  # tests in watch mode
 npm run typecheck   # strict TypeScript check
 npm run check       # typecheck, test, then build
+npm run release:zip # check, build, and create release/receivd-v<version>.zip
 ```
 
 ### Load into Chrome
@@ -47,6 +51,23 @@ npm run check       # typecheck, test, then build
 6. Sign into TCGplayer normally and visit the order history page.
 
 The extension never asks for or stores a TCGplayer password, cookie, authentication token, or other credential.
+
+## Chrome Web Store submission
+
+The repository contains a ready-to-use submission bundle:
+
+- `release/receivd-v0.1.0.zip` — generated Web Store upload package; `manifest.json` is at the ZIP root.
+- `store-assets/STORE_LISTING.md` — listing title, summary, description, URLs, and asset order.
+- `store-assets/PRIVACY_TAB.md` — single-purpose statement, permission justifications, remote-code declaration, data disclosures, and Limited Use certifications.
+- `store-assets/REVIEWER_INSTRUCTIONS.md` — authenticated TCGplayer test flow and selector notes.
+- `store-assets/SUBMISSION_CHECKLIST.md` — remaining Developer Dashboard steps.
+- `store-assets/screenshots/` — three privacy-safe 1280×800 screenshots rendered with synthetic order data.
+- `store-assets/promotional/small-promo-440x280.png` — small promotional tile.
+- `docs/privacy.html` — GitHub Pages-ready privacy policy.
+
+Before submitting, enable GitHub Pages for the repository's `docs/` directory and confirm the privacy-policy URL in `store-assets/STORE_LISTING.md` is live. Start with an Unlisted release for logged-in validation, then change the distribution to Public when the beta is stable.
+
+For an update, increase the version in both `package.json` and `public/manifest.json`, then run `npm run release:zip` again. Generated release ZIPs are intentionally ignored by Git.
 
 ## Architecture
 
@@ -148,7 +169,7 @@ The confirmed order-history URL is `https://store.tcgplayer.com/myaccount/orderh
 The isolated selector table in `src/marketplaces/tcgplayer/selectors.ts` currently uses:
 
 - the observed semantic `.orderWrap` element as one independently shipped order/package;
-- `spn-sellerorderwidget-orderdate` and related `data-aid` values for dates, seller, summary, tracking, and item tables;
+- `spn-sellerorderwidget-orderdate` and related `data-aid` values for dates, seller, summary, tracking number/link, and item tables;
 - the transaction button's `data-aid` suffix as the stable order number, including TCGplayer Direct numbers;
 - the labelled `Total:` summary-table row rather than assuming a fixed row index;
 - `.orderHistoryItems`, `.orderHistoryDetail`, `.orderHistoryPrice`, and `.orderHistoryQuantity` cells within each observed item row;
@@ -156,6 +177,9 @@ The isolated selector table in `src/marketplaces/tcgplayer/selectors.ts` current
 - `.orderSoldby` for per-item sellers within TCGplayer Direct packages;
 - `div-sellerorderwidget-singlerefund` for full/partial refund metadata, with Canceled retained separately as shipping state;
 - the rendered `est.delivery by <date>` shipping text for local estimated-delivery metadata;
+- `txb-orderhistorysearch-searchstring` and `btn-orderhistorysearch-search` for the user-requested “Open on TCGplayer” order search;
+- `btn-sellerorderwidget-contact` for each order's normal seller/TCGplayer Direct message route;
+- the observed `select#Subject` and `textarea#Body` compose fields, plus semantic fallbacks for the canned-message prefill;
 - generic data attributes, accessible labels, semantic links, and URL IDs as fallbacks for other order/detail layouts.
 
 The observed descriptive classes are isolated in the adapter; deep nesting, generated hashes, and `nth-child` selectors are not used. Parsing failures are caught, logged, and ignored without removing or hijacking TCGplayer content. Extracted strings are rendered as React text; scraped HTML is never injected.
@@ -185,6 +209,8 @@ These checks still require running the built extension while logged in:
 - [ ] Order detail page markup is detected and enriches cached history metadata.
 - [ ] Client-side navigation and dynamically inserted orders trigger one debounced rescan.
 - [ ] The `.orderWrap` mount location behaves correctly across desktop widths.
+- [ ] Overdue Pending orders open the correct seller or TCGplayer Direct message route.
+- [ ] The overdue follow-up action prefills an editable subject and message without submitting it.
 
 When a real selector differs, update `selectors.ts` and add a sanitized HTML fixture before changing core components.
 

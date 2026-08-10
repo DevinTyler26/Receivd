@@ -79,6 +79,69 @@
   padding: 12px;
 }
 
+.receivd-seller-message-action {
+  align-items: center;
+  background: #fff4ec;
+  border: 1px solid #efc6af;
+  border-radius: 7px;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  margin: -1px 0 12px;
+  padding: 9px 10px;
+}
+
+.receivd-seller-message-action div { display: flex; flex-direction: column; min-width: 0; }
+.receivd-seller-message-action strong { color: #8f3515; font-size: 12px; }
+.receivd-seller-message-action span { color: #9d6249; font-size: 10px; margin-top: 2px; }
+.receivd-seller-message-action a {
+  background: #a4431b;
+  border-radius: 6px;
+  color: #fff;
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 7px 9px;
+  text-decoration: none;
+}
+.receivd-seller-message-action a:hover { background: #8f3515; }
+
+.receivd-inline-tracking {
+  align-items: center;
+  border-bottom: 1px solid #edf0f5;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin: -2px 0 12px;
+  padding: 0 0 10px;
+}
+
+.receivd-inline-tracking > span:first-child {
+  color: #4c586d;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.receivd-inline-tracking a {
+  align-items: center;
+  color: #1d5ca8;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 650;
+  gap: 5px;
+  max-width: 70%;
+  text-decoration: none;
+}
+
+.receivd-inline-tracking a:hover { text-decoration: underline; }
+.receivd-inline-tracking a > span:first-child,
+.receivd-tracking-number {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.receivd-tracking-number { color: #4c586d; font-size: 12px; max-width: 70%; }
+
 .receivd-status-field {
   align-items: center;
   display: flex;
