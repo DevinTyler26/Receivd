@@ -44,3 +44,17 @@
 .promo-tile h1 { color: #14213b; font-size: 38px; letter-spacing: -.045em; margin: 0; }
 .promo-tile p { color: #3153a4; font-size: 13px; font-weight: 750; letter-spacing: .055em; margin: 4px 0 19px; text-transform: uppercase; }
 .promo-tile span { color: #5c6980; display: block; font-size: 14px; line-height: 1.4; max-width: 180px; }
+
+.marquee-body { background: #edf4fc; height: 560px; margin: 0; min-width: 0; overflow: hidden; width: 1400px; }
+.marquee-tile { background: radial-gradient(circle at 12% 12%, #fff 0, #edf5ff 50%, #dceafb 100%); box-sizing: border-box; height: 560px; overflow: hidden; padding: 64px 86px; position: relative; width: 1400px; }
+.marquee-tile::after { background: linear-gradient(145deg, rgb(49 83 164 / 8%), rgb(25 177 163 / 10%)); border: 1px solid rgb(49 83 164 / 10%); border-radius: 72px; content: ""; height: 460px; position: absolute; right: -165px; top: 50px; transform: rotate(-9deg); width: 570px; }
+.marquee-brand { align-items: center; display: flex; gap: 58px; position: relative; z-index: 1; }
+.marquee-brand img { border-radius: 44px; box-shadow: 0 24px 58px rgb(30 73 133 / 23%); height: 238px; width: 238px; }
+.marquee-eyebrow { color: #3153a4; font-size: 18px; font-weight: 800; letter-spacing: .075em; margin: 0 0 17px; text-transform: uppercase; }
+.marquee-brand h1 { color: #14213b; font-size: 62px; letter-spacing: -.045em; line-height: 1.02; margin: 0; }
+.marquee-copy { color: #53627a; font-size: 20px; line-height: 1.45; margin: 24px 0 0; max-width: 740px; }
+.marquee-statuses { bottom: 60px; display: flex; gap: 12px; left: 382px; position: absolute; z-index: 1; }
+.marquee-statuses span { border: 1px solid rgb(49 83 164 / 10%); border-radius: 999px; box-shadow: 0 7px 18px rgb(31 61 111 / 8%); display: inline-block; font-size: 14px; font-weight: 750; padding: 10px 16px; }
+.status-delivered { background: #e5f6ec; color: #177248; }
+.status-partial { background: #fff4d8; color: #8a6410; }
+.status-missing { background: #fde9ec; color: #a93345; }

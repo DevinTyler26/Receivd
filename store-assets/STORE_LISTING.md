@@ -43,6 +43,7 @@ Receivd is an independent extension and is not affiliated with or endorsed by TC
 2. `screenshots/02-overdue-order.png` — overdue Pending treatment on an order page.
 3. `screenshots/03-partial-reconciliation.png` — individual card reconciliation.
 4. `promotional/small-promo-440x280.png` — required small promotional tile.
-5. `../public/icon-128.png` — 128×128 store icon included in the release package.
+5. `promotional/marquee-promo-1400x560.png` — marquee promotional tile.
+6. `store-icon-128x128.png` — upload-ready 128×128 store icon.
 
 All displayed order numbers, seller names, tracking values, and notes in these images are synthetic demo data.

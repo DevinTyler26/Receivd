@@ -9,6 +9,15 @@ import { effectiveOrderStatus } from "../utils/orders";
 import { missingLineCount, totalMissingQuantity } from "../utils/quantities";
 import { safeExternalUrl } from "../utils/urls";
 import { buildSellerMessageUrl } from "../marketplaces/tcgplayer/sellerMessage";
+import { isExtensionContextInvalidated } from "../utils/errors";
+
+function handleStorageError(error: unknown): void {
+  if (isExtensionContextInvalidated(error)) {
+    window.dispatchEvent(new Event("receivd:context-invalidated"));
+    return;
+  }
+  console.warn("Receivd: could not update order tracking.", error);
+}
 
 export function OrderControl({ metadata }: { metadata: OrderMetadata }) {
   const [tracking, setTracking] = useState<OrderTrackingState>();
@@ -17,15 +26,31 @@ export function OrderControl({ metadata }: { metadata: OrderMetadata }) {
   const status = effectiveOrderStatus(metadata, tracking);
 
   const refresh = useCallback(async () => {
-    const allTracking = await getTrackingStates();
-    setTracking(allTracking[metadata.orderNumber]);
+    try {
+      const allTracking = await getTrackingStates();
+      setTracking(allTracking[metadata.orderNumber]);
+    } catch (error) {
+      handleStorageError(error);
+    }
   }, [metadata.orderNumber]);
 
   useEffect(() => {
     void refresh();
     const listener = () => void refresh();
-    chrome.storage.onChanged.addListener(listener);
-    return () => chrome.storage.onChanged.removeListener(listener);
+    try {
+      chrome.storage.onChanged.addListener(listener);
+    } catch (error) {
+      handleStorageError(error);
+    }
+    return () => {
+      try {
+        chrome.storage.onChanged.removeListener(listener);
+      } catch (error) {
+        if (!isExtensionContextInvalidated(error)) {
+          console.warn("Receivd: could not remove its storage listener.", error);
+        }
+      }
+    };
   }, [refresh]);
 
   const changeStatus = async (nextStatus: OrderStatus) => {
@@ -34,6 +59,8 @@ export function OrderControl({ metadata }: { metadata: OrderMetadata }) {
     try {
       setTracking(await setOrderStatus(metadata.orderNumber, nextStatus));
       window.dispatchEvent(new Event("receivd:rescan"));
+    } catch (error) {
+      handleStorageError(error);
     } finally {
       setSaving(false);
     }
@@ -43,6 +70,8 @@ export function OrderControl({ metadata }: { metadata: OrderMetadata }) {
     setSaving(true);
     try {
       setTracking(await setItemReceivedQuantity(metadata.orderNumber, itemId, quantity, metadata));
+    } catch (error) {
+      handleStorageError(error);
     } finally {
       setSaving(false);
     }

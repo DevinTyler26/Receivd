@@ -4,6 +4,7 @@ import { applyRequestedOrderHistorySearch } from "../marketplaces/tcgplayer/orde
 import { applyRequestedSellerMessage } from "../marketplaces/tcgplayer/sellerMessage";
 import { upsertLocalOrders } from "../storage/localOrders";
 import type { OrderMetadata } from "../types";
+import { isExtensionContextInvalidated } from "../utils/errors";
 import { OrderControl } from "./OrderControl";
 
 interface MountedControl {
@@ -15,12 +16,34 @@ interface MountedControl {
 const mounted = new Map<string, MountedControl>();
 let scanTimer: number | undefined;
 let scanInProgress = false;
+let integrationStopped = false;
+let pageObserver: MutationObserver | undefined;
+
+function stopIntegration(): void {
+  if (integrationStopped) return;
+  integrationStopped = true;
+  window.clearTimeout(scanTimer);
+  pageObserver?.disconnect();
+  for (const control of mounted.values()) {
+    control.root.unmount();
+    control.container.remove();
+  }
+  mounted.clear();
+}
+
+function handleIntegrationError(message: string, error: unknown): void {
+  if (isExtensionContextInvalidated(error)) {
+    stopIntegration();
+    return;
+  }
+  console.warn(message, error);
+}
 
 function applyOrderSearchRequest(): void {
   try {
     applyRequestedOrderHistorySearch(document, window.location, window.history);
   } catch (error) {
-    console.warn("Receivd: could not apply the requested order search.", error);
+    handleIntegrationError("Receivd: could not apply the requested order search.", error);
   }
 }
 
@@ -28,7 +51,7 @@ function applySellerMessageRequest(): void {
   try {
     applyRequestedSellerMessage(document, window.location, window.history);
   } catch (error) {
-    console.warn("Receivd: could not prepare the requested seller message.", error);
+    handleIntegrationError("Receivd: could not prepare the requested seller message.", error);
   }
 }
 
@@ -54,7 +77,7 @@ function mountControl(metadata: OrderMetadata, host: HTMLElement): void {
 }
 
 async function scanPage(): Promise<void> {
-  if (scanInProgress || !tcgplayerAdapter.canHandlePage(window.location)) return;
+  if (integrationStopped || scanInProgress || !tcgplayerAdapter.canHandlePage(window.location)) return;
   scanInProgress = true;
   try {
     const extracted = tcgplayerAdapter.extractOrders(document);
@@ -76,13 +99,14 @@ async function scanPage(): Promise<void> {
       }
     }
   } catch (error) {
-    console.warn("Receivd: TCGplayer page extraction failed safely.", error);
+    handleIntegrationError("Receivd: TCGplayer page extraction failed safely.", error);
   } finally {
     scanInProgress = false;
   }
 }
 
 function scheduleScan(delay = 250): void {
+  if (integrationStopped) return;
   window.clearTimeout(scanTimer);
   scanTimer = window.setTimeout(() => void scanPage(), delay);
 }
@@ -109,9 +133,10 @@ function installNavigationHooks(): void {
 function start(): void {
   if (!tcgplayerAdapter.canHandlePage(window.location)) return;
   installNavigationHooks();
+  window.addEventListener("receivd:context-invalidated", stopIntegration, { once: true });
   applyOrderSearchRequest();
   applySellerMessageRequest();
-  const observer = new MutationObserver((mutations) => {
+  pageObserver = new MutationObserver((mutations) => {
     const hasMarketplaceMutation = mutations.some((mutation) => {
       const target = mutation.target instanceof Element ? mutation.target : mutation.target.parentElement;
       return !target?.closest("[data-receivd-root]");
@@ -122,12 +147,12 @@ function start(): void {
       scheduleScan();
     }
   });
-  observer.observe(document.body, { childList: true, subtree: true });
+  pageObserver.observe(document.body, { childList: true, subtree: true });
   scheduleScan(0);
 }
 
 try {
   start();
 } catch (error) {
-  console.warn("Receivd: content integration did not start.", error);
+  handleIntegrationError("Receivd: content integration did not start.", error);
 }
