@@ -1,0 +1,33 @@
+{
+  "name": "receivd",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Receivd – TCG Order Tracker Chrome extension",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run build:popup && npm run build:content && npm run build:background",
+    "build:popup": "vite build",
+    "build:content": "vite build --config vite.content.config.ts",
+    "build:background": "vite build --config vite.background.config.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "@types/chrome": "^0.1.2",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.1",
+    "vitest": "^3.2.4"
+  }
+}

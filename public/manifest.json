@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Receivd – TCG Order Tracker",
+  "short_name": "Receivd",
+  "description": "Track which TCGplayer orders and cards actually arrived.",
+  "version": "0.1.0",
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://*.tcgplayer.com/*"],
+  "action": {
+    "default_title": "Receivd",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.tcgplayer.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
