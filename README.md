@@ -15,6 +15,7 @@ Receivd has no account, backend, database, OAuth flow, or access to TCGplayer cr
 - Offers an overdue-only seller follow-up action that opens TCGplayer's captured per-order compose route and prefills a courteous status request without sending it.
 - Stores optional notes, capped at 500 characters and saved with a short debounce.
 - Shows counts, an action badge, attention-first orders, all requested filters, and search by order number, seller, tracking number, or card name.
+- Includes popup settings with a synced, inclusive “received through” date for resolving older order history without creating a tracking record for every order.
 - Handles dynamically rendered pages with a debounced `MutationObserver` and History API navigation signals—there is no polling loop.
 - Preserves user tracking when TCGplayer metadata is refreshed.
 - Continues working locally when Chrome Sync is disabled, offline, temporarily unavailable, or over quota.
@@ -56,7 +57,7 @@ The extension never asks for or stores a TCGplayer password, cookie, authenticat
 
 The repository contains a ready-to-use submission bundle:
 
-- `release/receivd-v0.1.0.zip` — generated Web Store upload package; `manifest.json` is at the ZIP root.
+- `release/receivd-v0.2.0.zip` — generated Web Store upload package; `manifest.json` is at the ZIP root.
 - `store-assets/STORE_LISTING.md` — listing title, summary, description, URLs, and asset order.
 - `store-assets/PRIVACY_TAB.md` — single-purpose statement, permission justifications, remote-code declaration, data disclosures, and Limited Use certifications.
 - `store-assets/REVIEWER_INSTRUCTIONS.md` — authenticated TCGplayer test flow and selector notes.
@@ -121,6 +122,8 @@ Sync contains only small user-created records, one per changed order:
 - note (maximum 500 characters);
 - schema version and `updatedAt` timestamp.
 
+It also contains one compact settings record. The optional received-through date acts as a default for dated marketplace orders and avoids creating hundreds of redundant Delivered records.
+
 An unseen order has no sync record and is normally interpreted as Pending. A marketplace-confirmed full refund is interpreted locally as Refunded without creating a default sync record. Delivered can represent all quantities as received without writing every line item. Full scraped order objects, HTML, prices, card names, and other reconstructible data are never copied into sync storage.
 
 Chrome—not Receivd—controls whether extension data syncs between browsers. A failed sync write does not block the user action: Receivd writes the local mirror first and retries reconciliation when sync is available again.
@@ -152,6 +155,7 @@ Reordering DOM rows therefore does not move tracking between different cards. If
 - A captured “full refund” notice resolves the order as Refunded and removes it from Needs Attention and the action badge.
 - Partial or ambiguous refund notices do not automatically resolve an order.
 - An explicit user-selected Receivd status overrides a marketplace-derived Refunded default.
+- A configured received-through date treats orders dated on or before it as Delivered, while full refunds remain Refunded. Older tracking records are superseded by the cutoff; an individual status changed afterward wins.
 
 ## Permissions
 
@@ -235,7 +239,7 @@ The current suite covers:
 - Last-write-wins operates on the whole order tracking record, not independent note/item fields.
 - The Chrome Sync quota still bounds the total number of exceptionally large tracked orders; records are compact and per-order, but no archival UI exists yet.
 - The popup links back to the cached source page, not a guaranteed canonical order-detail URL.
-- There is no options page, data export/import, order archive, or non-TCGplayer marketplace support.
+- There is no standalone options page, data export/import, order archive, or non-TCGplayer marketplace support; the current settings live in the popup.
 
 ## Suggested next steps
 

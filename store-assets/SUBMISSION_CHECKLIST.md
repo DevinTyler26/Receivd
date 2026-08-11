@@ -3,7 +3,7 @@
 - [ ] Enable 2-Step Verification on the publisher Google account.
 - [ ] Enable GitHub Pages from the repository's `docs/` directory.
 - [ ] Confirm `https://devintyler26.github.io/Receivd/privacy.html` is publicly accessible.
-- [ ] Upload `release/receivd-v0.1.0.zip`.
+- [ ] Upload `release/receivd-v0.2.0.zip`.
 - [ ] Paste the copy from `STORE_LISTING.md`.
 - [ ] Upload the screenshots in their numbered order.
 - [ ] Upload `promotional/small-promo-440x280.png`.

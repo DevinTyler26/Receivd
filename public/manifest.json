@@ -3,7 +3,7 @@
   "name": "Receivd – TCG Order Tracker",
   "short_name": "Receivd",
   "description": "Track which TCGplayer orders and cards actually arrived.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "icons": {
     "16": "icon-16.png",
     "32": "icon-32.png",

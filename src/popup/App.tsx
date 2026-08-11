@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TCGPLAYER_ORDER_HISTORY_URL } from "../marketplaces/tcgplayer/urls";
 import { getLocalOrders } from "../storage/localOrders";
+import { EMPTY_SETTINGS, getSettings } from "../storage/settings";
 import { getTrackingStates } from "../storage/tracking";
-import type { DisplayOrder, OrderStatus } from "../types";
+import type { DisplayOrder, OrderStatus, ReceivdSettings } from "../types";
 import { combineOrders, matchesOrderSearch, orderDaysPastEstimate } from "../utils/orders";
 import { OrderDetail } from "./components/OrderDetail";
 import { OrderSummaryCard } from "./components/OrderSummaryCard";
+import { Settings } from "./components/Settings";
 
 type Filter = "attention" | "all" | OrderStatus;
 
@@ -22,14 +24,21 @@ const filters: Array<{ value: Filter; label: string }> = [
 export function App() {
   const [orders, setOrders] = useState<DisplayOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<ReceivdSettings>(EMPTY_SETTINGS);
   const [filter, setFilter] = useState<Filter>("attention");
   const [search, setSearch] = useState("");
   const [selectedOrderNumber, setSelectedOrderNumber] = useState<string>();
+  const [showSettings, setShowSettings] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
-      const [metadata, tracking] = await Promise.all([getLocalOrders(), getTrackingStates()]);
-      setOrders(combineOrders(metadata, tracking));
+      const [metadata, tracking, nextSettings] = await Promise.all([
+        getLocalOrders(),
+        getTrackingStates(),
+        getSettings()
+      ]);
+      setSettings(nextSettings);
+      setOrders(combineOrders(metadata, tracking, nextSettings));
     } finally {
       setLoading(false);
     }
@@ -72,6 +81,17 @@ export function App() {
     return <OrderDetail onBack={() => setSelectedOrderNumber(undefined)} order={selectedOrder} />;
   }
 
+  if (showSettings) {
+    return (
+      <Settings
+        onBack={() => setShowSettings(false)}
+        onSettingsChanged={setSettings}
+        orders={orders}
+        settings={settings}
+      />
+    );
+  }
+
   return (
     <main className="popup-shell">
       <header className="popup-header">
@@ -95,6 +115,15 @@ export function App() {
             <strong>{orders.length}</strong>
             <span>{orders.length === 1 ? "Order" : "Orders"}</span>
           </div>
+          <button
+            aria-label="Open settings"
+            className="header-settings-button"
+            onClick={() => setShowSettings(true)}
+            title="Settings"
+            type="button"
+          >
+            <span aria-hidden="true">⚙</span>
+          </button>
         </div>
       </header>
 

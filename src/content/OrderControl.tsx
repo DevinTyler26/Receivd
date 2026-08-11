@@ -3,7 +3,8 @@ import { OrderItemChecklist } from "../components/OrderItemChecklist";
 import { OrderStatusBadge } from "../components/OrderStatusBadge";
 import { OrderStatusMenu } from "../components/OrderStatusMenu";
 import { getTrackingStates, setItemReceivedQuantity, setOrderStatus } from "../storage/tracking";
-import type { OrderMetadata, OrderStatus, OrderTrackingState } from "../types";
+import { EMPTY_SETTINGS, getSettings } from "../storage/settings";
+import type { OrderMetadata, OrderStatus, OrderTrackingState, ReceivdSettings } from "../types";
 import { daysPastEstimatedDelivery, orderAgeLabel, pastEstimateLabel } from "../utils/dates";
 import { effectiveOrderStatus } from "../utils/orders";
 import { missingLineCount, totalMissingQuantity } from "../utils/quantities";
@@ -21,14 +22,16 @@ function handleStorageError(error: unknown): void {
 
 export function OrderControl({ metadata }: { metadata: OrderMetadata }) {
   const [tracking, setTracking] = useState<OrderTrackingState>();
+  const [settings, setSettings] = useState<ReceivdSettings>(EMPTY_SETTINGS);
   const [expanded, setExpanded] = useState(false);
   const [saving, setSaving] = useState(false);
-  const status = effectiveOrderStatus(metadata, tracking);
+  const status = effectiveOrderStatus(metadata, tracking, settings);
 
   const refresh = useCallback(async () => {
     try {
-      const allTracking = await getTrackingStates();
+      const [allTracking, nextSettings] = await Promise.all([getTrackingStates(), getSettings()]);
       setTracking(allTracking[metadata.orderNumber]);
+      setSettings(nextSettings);
     } catch (error) {
       handleStorageError(error);
     }

@@ -57,6 +57,15 @@ export interface OrderTrackingState {
   updatedAt: number;
 }
 
+export interface ReceivdSettings {
+  schemaVersion: typeof STORAGE_SCHEMA_VERSION;
+  /** Inclusive marketplace order-date cutoff, formatted as YYYY-MM-DD. */
+  receivedThroughDate?: string;
+  /** Timestamp for this specific preference so later manual status edits can win. */
+  receivedThroughUpdatedAt?: number;
+  updatedAt: number;
+}
+
 export interface DisplayOrder {
   orderNumber: string;
   metadata?: OrderMetadata;

@@ -1,17 +1,55 @@
-import type { DisplayOrder, OrderMetadata, OrderStatus, OrderTrackingState } from "../types";
+import type {
+  DisplayOrder,
+  OrderMetadata,
+  OrderStatus,
+  OrderTrackingState,
+  ReceivdSettings
+} from "../types";
 import { daysPastEstimatedDelivery } from "./dates";
+
+function calendarDate(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const direct = value.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (direct) return direct[1];
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return undefined;
+  return [
+    parsed.getUTCFullYear(),
+    String(parsed.getUTCMonth() + 1).padStart(2, "0"),
+    String(parsed.getUTCDate()).padStart(2, "0")
+  ].join("-");
+}
+
+export function isOrderWithinReceivedThroughDate(
+  metadata: OrderMetadata | undefined,
+  receivedThroughDate: string | undefined
+): boolean {
+  const orderedDate = calendarDate(metadata?.orderedAt);
+  return Boolean(orderedDate && receivedThroughDate && orderedDate <= receivedThroughDate);
+}
 
 export function effectiveOrderStatus(
   metadata: OrderMetadata | undefined,
-  tracking: OrderTrackingState | undefined
+  tracking: OrderTrackingState | undefined,
+  settings?: ReceivdSettings
 ): OrderStatus {
+  const coveredByCutoff = isOrderWithinReceivedThroughDate(
+    metadata,
+    settings?.receivedThroughDate
+  );
+  const cutoffUpdatedAt = settings?.receivedThroughUpdatedAt ?? settings?.updatedAt ?? 0;
+
+  if (coveredByCutoff && (!tracking || tracking.updatedAt <= cutoffUpdatedAt)) {
+    return metadata?.refund?.kind === "full" ? "refunded" : "delivered";
+  }
   if (tracking) return tracking.status;
   return metadata?.refund?.kind === "full" ? "refunded" : "pending";
 }
 
 export function combineOrders(
   metadataByOrder: Record<string, OrderMetadata>,
-  trackingByOrder: Record<string, OrderTrackingState>
+  trackingByOrder: Record<string, OrderTrackingState>,
+  settings?: ReceivdSettings
 ): DisplayOrder[] {
   const orderNumbers = new Set([...Object.keys(metadataByOrder), ...Object.keys(trackingByOrder)]);
 
@@ -20,7 +58,11 @@ export function combineOrders(
       orderNumber,
       metadata: metadataByOrder[orderNumber],
       tracking: trackingByOrder[orderNumber],
-      status: effectiveOrderStatus(metadataByOrder[orderNumber], trackingByOrder[orderNumber])
+      status: effectiveOrderStatus(
+        metadataByOrder[orderNumber],
+        trackingByOrder[orderNumber],
+        settings
+      )
     }))
     .sort(compareDisplayOrders);
 }
