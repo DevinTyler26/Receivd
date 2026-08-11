@@ -2,7 +2,7 @@
 
 Last updated: August 10, 2026
 
-Receivd – TCG Order Tracker ("Receivd") is a Chrome extension that helps users reconcile TCGplayer orders with the cards that actually arrive. Receivd has no developer-operated account system, backend, database, analytics service, or advertising service.
+Receivd – TCG Order Tracker ("Receivd") is a browser extension for Chromium-based browsers, including Google Chrome and Microsoft Edge, that helps users reconcile TCGplayer orders with the cards that actually arrive. Receivd has no developer-operated account system, backend, database, analytics service, or advertising service.
 
 ## Information Receivd handles
 
@@ -15,7 +15,7 @@ When a user visits a supported authenticated TCGplayer order page, Receivd reads
 - shipping status, tracking number, and estimated delivery date; and
 - refund status, amount, and date.
 
-Receivd also handles information the user creates in the extension: delivery status, received quantities, missing quantities derived from those entries, optional notes, and last-updated timestamps.
+Receivd also handles information the user creates in the extension: delivery status, received quantities, missing quantities derived from those entries, optional notes, settings such as a received-through cutoff date, and last-updated timestamps.
 
 ## Information Receivd does not handle
 
@@ -23,14 +23,14 @@ Receivd does not ask for, collect, or store TCGplayer passwords, authentication 
 
 ## How information is used
 
-The information above is used only to provide Receivd's user-facing order reconciliation features: displaying cached orders, tracking delivery status, calculating missing quantities, showing overdue estimates, preserving notes, and synchronizing compact user-created tracking state when Chrome Sync is available.
+The information above is used only to provide Receivd's user-facing order reconciliation features: displaying cached orders, tracking delivery status, calculating missing quantities, showing overdue estimates, preserving notes and preferences, and synchronizing compact user-created state when browser sync is available.
 
 ## Where information is stored
 
-- **Chrome local extension storage:** Reconstructible TCGplayer order metadata and a fallback copy of user-created tracking state remain on the current browser profile.
-- **Chrome synced extension storage:** Compact user-created tracking state—status, received quantity exceptions, optional notes, identifiers, and timestamps—may be synchronized by Chrome when the user has enabled Chrome Sync.
+- **Local browser extension storage:** Reconstructible TCGplayer order metadata and a fallback copy of user-created tracking state and preferences remain on the current browser profile.
+- **Synced browser extension storage:** Compact user-created tracking state and preferences—status, received quantity exceptions, optional notes, cutoff date, identifiers, and timestamps—may be synchronized when the user has enabled the browser's sync feature.
 
-Chrome and the user's Google account settings control whether synced extension storage is synchronized. Receivd does not control Chrome Sync and does not operate a separate sync service.
+The browser and the user's signed-in profile settings control whether synced extension storage is synchronized. Receivd does not control Chrome or Edge sync and does not operate a separate sync service. Chrome and Edge use separate sync services, so data does not automatically transfer between those browser families.
 
 ## Sharing and transmission
 
@@ -40,19 +40,19 @@ When the user deliberately opens a TCGplayer or PayPal link, the destination sit
 
 ## Retention and deletion
 
-Stored information remains until it is replaced through normal use, cleared from the Chrome profile, removed from synced extension data, or the extension is uninstalled. Revisiting TCGplayer may reconstruct local order metadata. Removing Receivd and its extension data deletes its local cache; Chrome controls retention of any synced copy.
+Stored information remains until it is replaced through normal use, cleared from the browser profile, removed from synced extension data, or the extension is uninstalled. Revisiting TCGplayer may reconstruct local order metadata. Removing Receivd and its extension data deletes its local cache; the browser controls retention of any synced copy.
 
 ## Security
 
 Receivd treats marketplace page content as untrusted plain text, does not execute scripts from page content, does not inject scraped HTML, and packages all executable extension code with the extension. Receivd does not use remotely hosted executable code.
 
-## Chrome Web Store Limited Use
+## Extension store compliance
 
-Receivd's use of information complies with the Chrome Web Store User Data Policy, including the Limited Use requirements. Receivd only handles information necessary to provide or improve its disclosed order-tracking features.
+Receivd's use of information complies with the applicable Chrome Web Store and Microsoft Edge Add-ons policies, including the Chrome Web Store Limited Use requirements. Receivd only handles information necessary to provide or improve its disclosed order-tracking features.
 
 ## Changes to this policy
 
-This policy may be updated when Receivd's functionality or data practices change. The updated policy will show a revised effective date. Material changes will also be reflected in the Chrome Web Store disclosures and extension experience as required.
+This policy may be updated when Receivd's functionality or data practices change. The updated policy will show a revised effective date. Material changes will also be reflected in applicable extension-store disclosures and the extension experience as required.
 
 ## Contact
 

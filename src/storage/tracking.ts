@@ -65,7 +65,7 @@ export async function writeTrackingState(state: OrderTrackingState): Promise<Ord
   try {
     await storageSet("sync", payload);
   } catch (error) {
-    console.info("Receivd: Chrome Sync unavailable; saved tracking locally.", error);
+    console.info("Receivd: browser sync unavailable; saved tracking locally.", error);
   }
   return state;
 }

@@ -216,7 +216,7 @@ export function App() {
       </section>
 
       <footer className="popup-footer">
-        <span>Delivery tracking can follow you between Chrome browsers when Chrome Sync is enabled.</span>
+        <span>Delivery tracking can follow you between signed-in browsers when browser sync is enabled.</span>
       </footer>
     </main>
   );

@@ -2,7 +2,7 @@ export type StorageAreaName = "local" | "sync";
 
 function storageArea(name: StorageAreaName): chrome.storage.StorageArea {
   if (typeof chrome === "undefined" || !chrome.storage?.[name]) {
-    throw new Error(`Chrome ${name} storage is unavailable`);
+    throw new Error(`Browser ${name} extension storage is unavailable`);
   }
   return chrome.storage[name];
 }

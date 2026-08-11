@@ -120,10 +120,10 @@ export function Settings({ settings, orders, onBack, onSettingsChanged }: Settin
 
       <section className="detail-card settings-card compact-settings-card">
         <span className="settings-kicker">Sync and privacy</span>
-        <h2>Your data stays in Chrome</h2>
+        <h2>Your data stays in your browser</h2>
         <p className="settings-copy">
-          This preference and your compact tracking changes can follow you when Chrome Sync is enabled.
-          Reconstructible TCGplayer order details remain local to each device.
+          This preference and your compact tracking changes can follow you when your browser's sync is
+          enabled. Reconstructible TCGplayer order details remain local to each device.
         </p>
       </section>
     </main>

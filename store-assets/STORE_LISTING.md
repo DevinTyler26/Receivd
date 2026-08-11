@@ -28,10 +28,10 @@ Features:
 - Open a prefilled, editable seller follow-up for overdue orders without automatically sending it.
 - Search cached orders by order number, seller, tracking number, or card name.
 - Add private notes such as replacement details or damaged-envelope information.
-- Keep compact delivery tracking state between Chrome browsers when Chrome Sync is enabled.
-- Continue working locally when Chrome Sync is disabled or temporarily unavailable.
+- Keep compact delivery tracking state between signed-in browsers when browser sync is enabled.
+- Continue working locally when browser sync is disabled or temporarily unavailable.
 
-Receivd has no separate account, backend, subscription, or login. It never asks for or stores a TCGplayer password, authentication cookie, or authentication token. Larger order metadata stays in local Chrome extension storage; only compact user-created tracking state is eligible for Chrome's extension-data synchronization.
+Receivd has no separate account, backend, subscription, or login. It never asks for or stores a TCGplayer password, authentication cookie, or authentication token. Larger order metadata stays in local browser extension storage; only compact user-created tracking state and preferences are eligible for the browser's extension-data synchronization.
 
 Receivd currently supports TCGplayer order history and compatible order-detail pages. The user must already be signed into TCGplayer and must visit an order page before Receivd can cache that order on a device.
 
