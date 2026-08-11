@@ -1,6 +1,6 @@
 # Chrome Web Store Privacy tab answers
 
-These answers are written to match Receivd version 0.1.0. Re-check them whenever the extension's permissions or data practices change.
+These answers are written to match Receivd version 0.2.0. Re-check them whenever the extension's permissions or data practices change.
 
 ## Single purpose
 
@@ -8,7 +8,7 @@ Receivd enhances authenticated TCGplayer order pages so collectors can track whe
 
 ## Permission justification: `storage`
 
-Receivd uses Chrome extension storage to keep reconstructible TCGplayer order metadata locally and compact user-created tracking state such as status, received quantities, notes, identifiers, and update timestamps. Synced storage is best effort; a local mirror lets the extension continue working when Chrome Sync is disabled, offline, unavailable, or over quota.
+Receivd uses browser extension storage to keep reconstructible TCGplayer order metadata locally and compact user-created tracking state and preferences such as status, received quantities, notes, cutoff date, identifiers, and update timestamps. Synced storage is best effort; a local mirror lets the extension continue working when browser sync is disabled, offline, unavailable, or over quota.
 
 ## Host permission justification: `https://*.tcgplayer.com/*`
 

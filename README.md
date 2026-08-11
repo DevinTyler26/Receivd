@@ -1,6 +1,6 @@
 # Receivd
 
-**Receivd – TCG Order Tracker** is a Chrome extension for reconciling TCGplayer orders with what actually arrives in the mail. It adds lightweight delivery controls to TCGplayer order pages and provides an attention-first popup dashboard.
+**Receivd – TCG Order Tracker** is a Chromium browser extension for reconciling TCGplayer orders with what actually arrives in the mail. It supports Google Chrome and Microsoft Edge, adds lightweight delivery controls to TCGplayer order pages, and provides an attention-first popup dashboard.
 
 Receivd has no account, backend, database, OAuth flow, or access to TCGplayer credentials. The user signs into TCGplayer normally; the extension only reads plain order information already rendered on supported authenticated pages.
 
@@ -18,7 +18,7 @@ Receivd has no account, backend, database, OAuth flow, or access to TCGplayer cr
 - Includes popup settings with a synced, inclusive “received through” date for resolving older order history without creating a tracking record for every order.
 - Handles dynamically rendered pages with a debounced `MutationObserver` and History API navigation signals—there is no polling loop.
 - Preserves user tracking when TCGplayer metadata is refreshed.
-- Continues working locally when Chrome Sync is disabled, offline, temporarily unavailable, or over quota.
+- Continues working locally when browser sync is disabled, offline, temporarily unavailable, or over quota.
 
 ## Development
 
@@ -52,6 +52,17 @@ npm run release:zip # check, build, and create release/receivd-v<version>.zip
 6. Sign into TCGplayer normally and visit the order history page.
 
 The extension never asks for or stores a TCGplayer password, cookie, authentication token, or other credential.
+
+### Load into Microsoft Edge
+
+1. Run `npm run build`.
+2. Open `edge://extensions`.
+3. Enable **Developer mode**.
+4. Select **Load unpacked**.
+5. Choose this repository's `dist/` directory.
+6. Sign into TCGplayer normally and visit the order history page.
+
+The same Manifest V3 package is used by Chrome and Edge. Edge implements the `chrome.*` extension API namespace for compatibility, so no Edge-specific runtime bundle is required.
 
 ## Chrome Web Store submission
 
@@ -105,7 +116,7 @@ When an existing metadata record is seen again:
 - previously cached details are retained if a less-detailed page omits them;
 - user tracking is untouched because it lives in a different record namespace.
 
-## Local storage vs Chrome Sync
+## Local storage vs browser sync
 
 ### `chrome.storage.local`
 
@@ -126,7 +137,7 @@ It also contains one compact settings record. The optional received-through date
 
 An unseen order has no sync record and is normally interpreted as Pending. A marketplace-confirmed full refund is interpreted locally as Refunded without creating a default sync record. Delivered can represent all quantities as received without writing every line item. Full scraped order objects, HTML, prices, card names, and other reconstructible data are never copied into sync storage.
 
-Chrome—not Receivd—controls whether extension data syncs between browsers. A failed sync write does not block the user action: Receivd writes the local mirror first and retries reconciliation when sync is available again.
+The browser—not Receivd—controls whether extension data syncs between signed-in browser profiles. A failed sync write does not block the user action: Receivd writes the local mirror first and retries reconciliation when sync is available again. Chrome and Edge use separate profiles, extension IDs, and sync services, so Receivd data does not automatically transfer between the two browser families.
 
 ### Conflict behavior
 
@@ -237,7 +248,7 @@ The current suite covers:
 - History extraction is capture-validated, but inline mounting and order-detail extraction still require logged-in runtime validation.
 - A device initially shows a synced order number/status/note without seller/card metadata until that device visits the relevant TCGplayer page.
 - Last-write-wins operates on the whole order tracking record, not independent note/item fields.
-- The Chrome Sync quota still bounds the total number of exceptionally large tracked orders; records are compact and per-order, but no archival UI exists yet.
+- Browser sync quotas still bound the total number of exceptionally large tracked orders; records are compact and per-order, but no archival UI exists yet.
 - The popup links back to the cached source page, not a guaranteed canonical order-detail URL.
 - There is no standalone options page, data export/import, order archive, or non-TCGplayer marketplace support; the current settings live in the popup.
 
@@ -247,6 +258,6 @@ The current suite covers:
 2. Provide a sanitized order-detail capture so that route can receive the same production-shaped coverage.
 3. Add browser-level extension tests using the sanitized fixtures and mocked Chrome storage areas.
 4. Add compact archival controls if old Pending/Missing orders make the action badge less useful.
-5. Consider a sync-quota warning only if real usage shows users approaching Chrome's limits.
+5. Consider a sync-quota warning only if real usage shows users approaching browser limits.
 
 Receivd intentionally remains TCGplayer-only for this MVP, but marketplace-specific code is isolated so a future adapter can be added without changing storage or shared tracking UI.

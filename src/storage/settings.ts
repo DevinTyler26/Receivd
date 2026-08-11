@@ -74,7 +74,7 @@ export async function reconcileSettingsStores(): Promise<void> {
     try {
       await storageSet("sync", payload);
     } catch {
-      // The local settings mirror remains usable until Chrome Sync returns.
+      // The local settings mirror remains usable until browser sync returns.
     }
   }
 }
@@ -100,7 +100,7 @@ export async function setReceivedThroughDate(date?: string): Promise<ReceivdSett
   try {
     await storageSet("sync", payload);
   } catch (error) {
-    console.info("Receivd: Chrome Sync unavailable; saved settings locally.", error);
+    console.info("Receivd: browser sync unavailable; saved settings locally.", error);
   }
   return next;
 }
