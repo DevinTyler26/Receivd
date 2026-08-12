@@ -1,12 +1,12 @@
 # Receivd Privacy Policy
 
-Last updated: August 10, 2026
+Last updated: August 11, 2026
 
 Receivd – TCG Order Tracker ("Receivd") is a browser extension for Chromium-based browsers, including Google Chrome and Microsoft Edge, that helps users reconcile TCGplayer orders with the cards that actually arrive. Receivd has no developer-operated account system, backend, database, analytics service, or advertising service.
 
 ## Information Receivd handles
 
-When a user visits a supported authenticated TCGplayer order page, Receivd reads plain order information already rendered in that page. Depending on what TCGplayer provides, this can include:
+When a user visits a supported authenticated TCGplayer order page, Receivd reads plain order information from that page. On numbered order history, Receivd also requests the other numbered pages in the date range the user selected directly from TCGplayer using the user's existing signed-in browser session so those orders can be shown together. Depending on what TCGplayer provides, this can include:
 
 - order number and order date;
 - seller name;
@@ -36,7 +36,7 @@ The browser and the user's signed-in profile settings control whether synced ext
 
 Receivd does not transmit order information or user-created tracking state to the developer, advertisers, data brokers, analytics providers, or other third parties. Receivd does not sell user data and does not use it for advertising, creditworthiness, lending, or unrelated purposes.
 
-When the user deliberately opens a TCGplayer or PayPal link, the destination site receives the normal information associated with visiting a website. Receivd does not attach cached order information, notes, or tracking state to those links and does not process PayPal payments.
+While the user is on TCGplayer order history, Receivd sends ordinary page-number requests only to TCGplayer to retrieve the user's other history pages. When the user deliberately opens a TCGplayer or PayPal link, the destination site receives the normal information associated with visiting a website. Receivd does not attach cached order information, notes, or tracking state to those requests or links and does not process PayPal payments.
 
 ## Retention and deletion
 

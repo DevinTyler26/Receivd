@@ -33,7 +33,7 @@ Features:
 
 Receivd has no separate account, backend, subscription, or login. It never asks for or stores a TCGplayer password, authentication cookie, or authentication token. Larger order metadata stays in local browser extension storage; only compact user-created tracking state and preferences are eligible for the browser's extension-data synchronization.
 
-Receivd currently supports TCGplayer order history and compatible order-detail pages. The user must already be signed into TCGplayer and must visit an order page before Receivd can cache that order on a device.
+Receivd currently supports TCGplayer order history and compatible order-detail pages. The user must already be signed into TCGplayer and open order history; Receivd then imports the other numbered pages for the date range the user selected into the local dashboard without requiring the user to visit each page.
 
 Receivd is an independent extension and is not affiliated with or endorsed by TCGplayer.
 

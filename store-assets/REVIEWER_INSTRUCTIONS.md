@@ -2,7 +2,7 @@
 
 ## Overview
 
-Receivd has no developer-operated account or login. It enhances order information that TCGplayer renders after the user signs into TCGplayer normally. Receivd never requests, stores, or intercepts TCGplayer credentials, cookies, or authentication tokens.
+Receivd has no developer-operated account or login. It enhances order information that TCGplayer provides after the user signs into TCGplayer normally. While order history is open, it observes the date range selected by the user and requests that result set's other numbered pages using the existing browser session. Receivd never changes the selected date range and never reads, stores, or intercepts TCGplayer credentials, cookies, or authentication tokens.
 
 ## Prerequisite
 
@@ -22,8 +22,9 @@ The popup and first-run experience can still be inspected without signing into T
 8. Choose Partially Delivered, expand the control again, and edit individual received quantities.
 9. Reload the TCGplayer page and confirm the selected status and quantities remain.
 10. Open the extension popup and verify the cached order appears with its current status.
-11. Open the order detail inside the popup to inspect quantities, missing counts, metadata, and the optional note.
-12. On an overdue Pending order, choose “Ask seller for an update” and confirm TCGplayer's compose form opens with an editable message. Receivd never submits the message.
+11. If the account has multiple history pages, verify orders from page 2 and later also appear in the popup without manually visiting those pages.
+12. Open the order detail inside the popup to inspect quantities, missing counts, metadata, and the optional note.
+13. On an overdue Pending order, choose “Ask seller for an update” and confirm TCGplayer's compose form opens with an editable message. Receivd never submits the message.
 
 ## Important behaviors
 

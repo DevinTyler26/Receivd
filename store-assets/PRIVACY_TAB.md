@@ -1,6 +1,6 @@
 # Chrome Web Store Privacy tab answers
 
-These answers are written to match Receivd version 0.2.0. Re-check them whenever the extension's permissions or data practices change.
+These answers are written to match Receivd version 0.3.0. Re-check them whenever the extension's permissions or data practices change.
 
 ## Single purpose
 
@@ -12,7 +12,7 @@ Receivd uses browser extension storage to keep reconstructible TCGplayer order m
 
 ## Host permission justification: `https://*.tcgplayer.com/*`
 
-Receivd needs access to TCGplayer pages to inspect order information already rendered for the signed-in user and add delivery-tracking controls beside recognized orders. The content adapter exits immediately outside TCGplayer account/order routes. Receivd does not read authentication cookies or tokens and does not bypass TCGplayer authentication.
+Receivd needs access to TCGplayer pages to inspect order information for the signed-in user, add delivery-tracking controls beside recognized orders, and request the other numbered pages in the date range the user selected while order history is open. Those same-origin requests use the user's existing browser session; Receivd does not read or store authentication cookies or tokens and does not bypass TCGplayer authentication. The content adapter exits immediately outside TCGplayer account/order routes.
 
 ## Remote code
 
@@ -24,7 +24,7 @@ All React, storage, parsing, content-script, and service-worker code is compiled
 
 Use conservative disclosures. Select:
 
-- **Website content:** Yes. Receivd reads order information rendered on supported TCGplayer pages.
+- **Website content:** Yes. Receivd reads order information from supported TCGplayer pages, including the other numbered history pages while the user is viewing order history.
 - **Financial and payment information:** Yes. Receivd caches marketplace order totals and item prices. It does not handle card numbers, bank details, or payment credentials.
 - **Personally identifiable information:** Yes. Receivd stores order numbers and may store shipment tracking numbers, which are transaction-specific identifiers. It does not extract the user's name, address, email address, or TCGplayer credentials.
 - **User-generated content:** Yes, if the dashboard presents this category. Receivd stores user-created notes, statuses, and received quantities.

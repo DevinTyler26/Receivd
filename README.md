@@ -2,11 +2,11 @@
 
 **Receivd – TCG Order Tracker** is a Chromium browser extension for reconciling TCGplayer orders with what actually arrives in the mail. It supports Google Chrome and Microsoft Edge, adds lightweight delivery controls to TCGplayer order pages, and provides an attention-first popup dashboard.
 
-Receivd has no account, backend, database, OAuth flow, or access to TCGplayer credentials. The user signs into TCGplayer normally; the extension only reads plain order information already rendered on supported authenticated pages.
+Receivd has no account, backend, database, OAuth flow, or access to TCGplayer credentials. The user signs into TCGplayer normally. While the user is on TCGplayer order history, the extension reads the rendered page and requests the other numbered order-history pages from TCGplayer using that existing signed-in browser session.
 
 ## MVP features
 
-- Detects orders on TCGplayer order history and order detail pages.
+- Detects orders on TCGplayer order history and order detail pages, and imports orders from the other numbered pages in the date range the user selected without navigating away from the current page.
 - Adds Pending, Delivered, Partially Delivered, Missing / Never Arrived, and Refunded controls to recognized orders.
 - Tracks received quantities by stable order-line identity and shows missing quantities.
 - Prominently flags Pending orders after TCGplayer's estimated delivery date without declaring them Missing.
@@ -68,7 +68,7 @@ The same Manifest V3 package is used by Chrome and Edge. Edge implements the `ch
 
 The repository contains a ready-to-use submission bundle:
 
-- `release/receivd-v0.2.0.zip` — generated Web Store upload package; `manifest.json` is at the ZIP root.
+- `release/receivd-v0.3.0.zip` — generated Web Store upload package; `manifest.json` is at the ZIP root.
 - `store-assets/STORE_LISTING.md` — listing title, summary, description, URLs, and asset order.
 - `store-assets/PRIVACY_TAB.md` — single-purpose statement, permission justifications, remote-code declaration, data disclosures, and Limited Use certifications.
 - `store-assets/REVIEWER_INSTRUCTIONS.md` — authenticated TCGplayer test flow and selector notes.
@@ -97,8 +97,8 @@ The popup, content script, and service worker are compiled separately so `conten
 ### Data flow and reconciliation
 
 ```text
-Authenticated TCGplayer page
-        ↓ rendered plain values only
+Authenticated TCGplayer order pages
+        ↓ rendered page + numbered history-page requests
 chrome.storage.local metadata cache
         +
 chrome.storage.sync tracking state
@@ -173,7 +173,7 @@ Reordering DOM rows therefore does not move tracking between different cards. If
 The production manifest requests only:
 
 - `storage` — saves local marketplace metadata and compact user tracking in extension local/sync storage.
-- `https://*.tcgplayer.com/*` host access — allows the declared content script to inspect rendered TCGplayer order pages. The adapter exits immediately outside account/order routes.
+- `https://*.tcgplayer.com/*` host access — allows the declared content script to inspect rendered TCGplayer order pages and, from order history, request its other numbered pages. The adapter exits immediately outside account/order routes.
 
 The extension has no history, cookies, identity, web request, broad tab-reading, clipboard, or unrelated host permissions. Opening a user-clicked TCGplayer link with `chrome.tabs.create` does not require the `tabs` permission.
 

@@ -1,7 +1,13 @@
 import { createRoot, type Root } from "react-dom/client";
 import { tcgplayerAdapter } from "../marketplaces/tcgplayer/adapter";
+import {
+  importPaginatedOrderHistory,
+  orderHistoryDateRange,
+  orderHistoryPageUrls
+} from "../marketplaces/tcgplayer/orderHistoryPagination";
 import { applyRequestedOrderHistorySearch } from "../marketplaces/tcgplayer/orderHistorySearch";
 import { applyRequestedSellerMessage } from "../marketplaces/tcgplayer/sellerMessage";
+import { selectors } from "../marketplaces/tcgplayer/selectors";
 import { upsertLocalOrders } from "../storage/localOrders";
 import type { OrderMetadata } from "../types";
 import { isExtensionContextInvalidated } from "../utils/errors";
@@ -16,14 +22,23 @@ interface MountedControl {
 const mounted = new Map<string, MountedControl>();
 let scanTimer: number | undefined;
 let scanInProgress = false;
+let scanRequestedWhileBusy = false;
 let integrationStopped = false;
 let pageObserver: MutationObserver | undefined;
+let paginationImportSignature: string | undefined;
+
+function handleOrderHistoryFilterChange(event: Event): void {
+  if (!(event.target instanceof HTMLSelectElement)) return;
+  if (!event.target.matches(selectors.orderHistoryDateRange.join(","))) return;
+  scheduleScan();
+}
 
 function stopIntegration(): void {
   if (integrationStopped) return;
   integrationStopped = true;
   window.clearTimeout(scanTimer);
   pageObserver?.disconnect();
+  document.removeEventListener("change", handleOrderHistoryFilterChange, true);
   for (const control of mounted.values()) {
     control.root.unmount();
     control.container.remove();
@@ -77,19 +92,24 @@ function mountControl(metadata: OrderMetadata, host: HTMLElement): void {
 }
 
 async function scanPage(): Promise<void> {
-  if (integrationStopped || scanInProgress || !tcgplayerAdapter.canHandlePage(window.location)) return;
+  if (integrationStopped || !tcgplayerAdapter.canHandlePage(window.location)) return;
+  if (scanInProgress) {
+    scanRequestedWhileBusy = true;
+    return;
+  }
   scanInProgress = true;
   try {
     const extracted = tcgplayerAdapter.extractOrders(document);
-    if (!extracted.length) return;
-    const reconciled = await upsertLocalOrders(extracted.map(({ metadata }) => metadata));
-    const metadataByOrder = new Map(reconciled.map((metadata) => [metadata.orderNumber, metadata]));
-    for (const order of extracted) {
-      const metadata = metadataByOrder.get(order.metadata.orderNumber) ?? order.metadata;
-      try {
-        mountControl(metadata, order.hostElement);
-      } catch (error) {
-        console.warn(`Receivd: could not mount order ${metadata.orderNumber}.`, error);
+    if (extracted.length) {
+      const reconciled = await upsertLocalOrders(extracted.map(({ metadata }) => metadata));
+      const metadataByOrder = new Map(reconciled.map((metadata) => [metadata.orderNumber, metadata]));
+      for (const order of extracted) {
+        const metadata = metadataByOrder.get(order.metadata.orderNumber) ?? order.metadata;
+        try {
+          mountControl(metadata, order.hostElement);
+        } catch (error) {
+          console.warn(`Receivd: could not mount order ${metadata.orderNumber}.`, error);
+        }
       }
     }
     for (const [orderNumber, control] of mounted) {
@@ -98,10 +118,26 @@ async function scanPage(): Promise<void> {
         mounted.delete(orderNumber);
       }
     }
+
+    const isOrderHistory = /\/myaccount\/orderhistory\/?$/i.test(window.location.pathname);
+    const pageUrls = orderHistoryPageUrls(document, window.location);
+    const dateRange = orderHistoryDateRange(document);
+    const signature = isOrderHistory && dateRange
+      ? `${window.location.href}\nrange=${dateRange}\n${pageUrls.join("\n")}`
+      : "";
+    if (signature && signature !== paginationImportSignature) {
+      paginationImportSignature = signature;
+      const imported = await importPaginatedOrderHistory(document, window.location);
+      if (imported.length) await upsertLocalOrders(imported);
+    }
   } catch (error) {
     handleIntegrationError("Receivd: TCGplayer page extraction failed safely.", error);
   } finally {
     scanInProgress = false;
+    if (scanRequestedWhileBusy) {
+      scanRequestedWhileBusy = false;
+      scheduleScan(0);
+    }
   }
 }
 
@@ -134,6 +170,7 @@ function start(): void {
   if (!tcgplayerAdapter.canHandlePage(window.location)) return;
   installNavigationHooks();
   window.addEventListener("receivd:context-invalidated", stopIntegration, { once: true });
+  document.addEventListener("change", handleOrderHistoryFilterChange, true);
   applyOrderSearchRequest();
   applySellerMessageRequest();
   pageObserver = new MutationObserver((mutations) => {

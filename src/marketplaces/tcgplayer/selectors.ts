@@ -103,6 +103,11 @@ export const selectors = {
     '#OrderHistoryFilterForm input[type="submit"]',
     'input[type="submit"][title="Search Submit"]'
   ],
+  orderHistoryDateRange: [
+    '[data-aid*="orderhistory" i][data-aid*="daterange" i]',
+    "select#DateRange",
+    'select[name="DateRange"]'
+  ],
   sellerMessageSubject: [
     'select#Subject',
     'select[name="Subject"]',
